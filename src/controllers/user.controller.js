@@ -87,13 +87,13 @@ const registerUser = asyncHandler( async (req, res) => {
     })
 
     // here findById() method by default select all, so jinko nahi select karna tha use string me - karke " "(1 space) se lekhenge
-    const createdUser = await User.findById(user._id).select("-password -refreshToken")
+    const createdUser = await User.findById(user._id).select(" -password -refreshToken")
 
     if(!createdUser){
         throw new apiError(500, "Something went wrong while registering the user.")
     }
-
-    return res.status(201).json(
+    console.log(createdUser)
+    return res.status(200).json(
         new apiResponse(200, createdUser, "User registered successfully")
     )
 })
@@ -153,8 +153,8 @@ const logoutUser = asyncHandler( async (req, res) => {
     await User.findByIdAndUpdate(
         req.user._id,
         {
-            $set: {
-                refreshToken: undefined
+            $unset: {
+                refreshToken: 1 //this remove the field from the document
             }
         },
         {
